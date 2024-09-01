@@ -1,0 +1,56 @@
+<body>
+    <div class="">
+        <div class="row">
+            <div class="col-sm-10">
+                <h4 class="p-4">projects</h4>
+            </div>
+            <div class="col-sm-2">
+                <a routerLink="/projects/new" class="new-project-link">Create New Project</a>
+            </div>
+        </div>
+        <div class="project-list p-4">
+            <div class="project-item" *ngFor="let project of projects$ | async">
+                <div class="project-header">
+                    {{ (project.name.length > 15) ? (project.name | slice:0:15) + '..'
+                    : (project.name) }}                    <a [routerLink]="['/projects', project.id]" class="view-details">View Details</a>
+                </div>
+                <p class="description"> {{ (project.description.length > 15) ? (project.description | slice:0:15) + '..'
+                    : (project.description) }}
+                </p>
+                <span class="priority-badge" [ngClass]="{
+                    'priority-low': project.priority === 'Low',
+                    'priority-medium': project.priority === 'Medium',
+                    'priority-high': project.priority === 'High'
+                  }">
+                    {{ project.priority }}
+                </span>
+                <!-- Overall Progress Bar -->
+                <div class="progress-container" *ngIf="project.tasks && project.tasks.length > 0">
+                    <div class="progress-bar">
+                        <div class="progress-fill" [style.width.%]="getOverallProgress(project.tasks)">
+                        </div>
+                    </div>
+                    <p class="progress-percentage">{{ getOverallProgress(project.tasks) }}% Complete</p>
+                </div>
+                <div class="no-tasks" *ngIf="!project.tasks || project.tasks.length === 0">
+                    No tasks available for this project.
+                </div>
+                <!-- Task Summary -->
+                <div class="progress-summary" *ngIf="project.tasks && project.tasks.length > 0">
+                    <div class="progress-item">
+                        <span class="label">Completed:</span>
+                        <span class="value">{{ getTaskCounts(project.tasks).completed }}</span>
+                    </div>
+                    <div class="progress-item">
+                        <span class="label">In Progress:</span>
+                        <span class="value">{{ getTaskCounts(project.tasks).inProgress }}</span>
+                    </div>
+                    <div class="progress-item">
+                        <span class="label">To Do:</span>
+                        <span class="value">{{ getTaskCounts(project.tasks).toDo }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
